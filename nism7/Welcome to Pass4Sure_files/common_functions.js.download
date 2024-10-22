@@ -1,0 +1,174 @@
+function OpenNewWindow(strurl,winname,width,height)
+{
+	var left = parseInt((screen.width/2) - (width/2));
+    var top = parseInt((screen.height/2) - (height/2))/2;
+	window.open(strurl, winname,"left="+left+",top="+top+",height="+height+",width="+width+",status=1,toolbar=0,Resizable=0,scrollbars=1");
+}
+
+function OpenNewWindowR(strurl,winname,width,height)
+{
+	var left = parseInt((screen.width/2) - (width/2));
+    var top = parseInt((screen.height/2) - (height/2))/2;
+	window.open(strurl, winname,"left="+left+",top="+top+",height="+height+",width="+width+",status=1,toolbar=0,Resizable=1,scrollbars=1");
+}
+
+function OpenNewWindowF(strurl,winname,width,height)
+{
+	var left = parseInt((screen.width/2) - (width/2));
+    var top = parseInt((screen.height/2) - (height/2))/2;
+	window.open(strurl, winname,"left="+left+",top="+top+",height="+height+",width="+width+",status=1,toolbar=1,Resizable=1,scrollbars=1");
+}
+
+function OpenNewWindowFull(strurl,winname,width,height)
+{
+	var left = parseInt((screen.width/2) - (width/2));
+    var top = parseInt((screen.height/2) - (height/2))/2;
+	window.open(strurl, winname,"left="+left+",top="+top+",height="+height+",width="+width+",status=1,toolbar=1,Resizable=1,scrollbars=1,location=1,menubar=1");
+}
+
+
+function confirm_delete(szWhat, szWho, szURL)
+{
+	input_box=confirm("Are you sure you want to delete "+ szWhat +" '" + szWho + "'?");
+
+	if (input_box==true)
+	{
+		//alert(szURL);
+		location.href = szURL;	//URL of file where delete operation will take place
+	}
+}
+
+function removeAllOptions(selectbox)
+{
+	var i;
+	for(i=selectbox.options.length-1;i>=0;i--)
+	{
+		selectbox.remove(i);
+	}
+}
+
+function removeOptions(selectbox)
+{
+	var i;
+	for(i=selectbox.options.length-1;i>=0;i--)
+	{
+		if(selectbox.options[i].selected)
+			selectbox.remove(i);
+	}
+}
+
+function addOption(selectbox,text,value )
+{
+	var optn = document.createElement("OPTION");
+	optn.text = text;
+	optn.value = value;
+	selectbox.options.add(optn);
+}
+
+/*********************************************************************************/
+// Hide & Show content
+function hideElement (elementId) {
+var element;
+if (document.all)
+element = document.all[elementId];
+else if (document.getElementById)
+element = document.getElementById(elementId);
+if (element && element.style)
+element.style.display = 'none';
+}
+function showElement (elementId) {
+var element;
+if (document.all)
+element = document.all[elementId];
+else if (document.getElementById)
+element = document.getElementById(elementId);
+if (element && element.style)
+element.style.display = '';
+}
+/*********************************************************************************/
+
+/*********************************************************************************/
+// Removes extra spaces from starting and ending
+function trim(value)
+{
+  var text = value;
+  while ((text.length) && (text.charAt(0) == " ")) 
+	  text = text.substring(1, text.length);
+		  while ((text.length) && (text.charAt(text.length-1) == " "))
+			   text = text.substring(0, text.length-1);
+				   return text.replace(/^\s*|\s*$/g,"");
+}
+/*********************************************************************************/
+
+function Count(text,long)
+{
+	var maxlength = new Number(long); 
+	// Change number to your max length.
+
+	if (text.value.length > maxlength)
+	{
+	    text.value = text.value.substring(0,maxlength);
+		alert(" Only " + long + " chars allowed for this field.");
+	}
+}
+
+function isEmail(elementValue)
+{
+	//alert("In isEmail Function");
+	error = false;
+	var atplace=elementValue.search("@");
+	var emaillen = elementValue.length
+	var dotplace= elementValue.lastIndexOf(".")
+	var atdotdiff=dotplace-atplace
+	var atplace1=elementValue.lastIndexOf("@")
+	/*
+	if (elementValue=="")
+	{
+		alert("Email should not be blank");
+		error = true;
+	}
+	*/
+	if (atplace != atplace1)
+	{
+		alert("Email can have only 1 @ sign");
+		error = true;	
+	}
+	if( elementValue.search(" ") >= 0 )
+	{
+		 alert("Invalid Email Address No Spaces Please");
+		 error = true;
+	}
+	if((atplace==-1) || (dotplace==emaillen) || (atdotdiff<=1))
+	{
+		alert("Invalid Email Address");
+		error = true;
+	}
+  return  error;
+}
+
+function isDecimalNumberKey(evt) 
+{
+    var charCode = (evt.which) ? evt.which : event.keyCode
+    //alert(charCode);
+    if (charCode > 31 && (charCode < 48 || charCode > 57))
+    {
+        if(charCode != "46")
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+function isNumberKey(evt) 
+{
+    var charCode = (evt.which) ? evt.which : event.keyCode
+    //alert(charCode);
+    if (charCode > 31 && (charCode < 48 || charCode > 57))
+    {
+
+            return false;
+
+    }
+    return true;
+}
