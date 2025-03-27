@@ -3,40 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KRA Score Calculator</title>
+    <title>Shruti's Team KRA Score Calculator</title>
     <style>
+        /* General Styles */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
+
+        /* Container Box */
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
-            margin: auto;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
         }
-        input, button {
-            width: 100%;
+
+        /* Title */
+        h2 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        /* Input Fields */
+        input {
+            width: 90%;
             padding: 10px;
-            margin: 5px 0;
+            margin: 8px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-size: 14px;
+            outline: none;
         }
+
+        input:focus {
+            border-color: #007bff;
+        }
+
+        /* Button */
         button {
-            background-color: #007bff;
+            width: 100%;
+            background: #007bff;
             color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
+            transition: background 0.3s;
         }
+
         button:hover {
-            background-color: #0056b3;
+            background: #0056b3;
         }
+
+        /* Result Box */
         .result {
             margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
             font-weight: bold;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .show {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -45,16 +90,9 @@
     <div class="container">
         <h2>KRA Score Calculator</h2>
         
-        <label>Agent Name:</label>
         <input type="text" id="agent_name" placeholder="Enter Agent Name">
-        
-        <label>Quality Score (%):</label>
-        <input type="number" id="quality_score" placeholder="Enter Quality Score">
-        
-        <label>Quiz Score (%):</label>
-        <input type="number" id="quiz_score" placeholder="Enter Quiz Score">
-        
-        <label>Productivity:</label>
+        <input type="number" id="quality_score" placeholder="Enter Quality Score (%)">
+        <input type="number" id="quiz_score" placeholder="Enter Quiz Score (%)">
         <input type="number" id="productivity" placeholder="Enter Productivity">
         
         <button onclick="calculateKRA()">Calculate KRA</button>
@@ -70,7 +108,8 @@
             let productivity = parseFloat(document.getElementById("productivity").value);
 
             if (isNaN(qualityScore) || isNaN(quizScore) || isNaN(productivity) || agentName === "") {
-                document.getElementById("result").innerHTML = "Please enter valid inputs!";
+                document.getElementById("result").innerHTML = "⚠️ Please enter valid inputs!";
+                document.getElementById("result").classList.add("show");
                 return;
             }
 
@@ -99,12 +138,13 @@
 
             // Display Result
             document.getElementById("result").innerHTML = `
-                <p><strong>Agent Name:</strong> ${agentName}</p>
-                <p><strong>Quality KRA:</strong> ${qualityKRA}%</p>
-                <p><strong>Quiz KRA:</strong> ${quizKRA}%</p>
-                <p><strong>Productivity KRA:</strong> ${productivityKRA}%</p>
-                <p><strong>Total KRA Score:</strong> ${totalKRA}%</p>
+                <p>📌 <strong>Agent Name:</strong> ${agentName}</p>
+                <p>✅ <strong>Quality KRA:</strong> ${qualityKRA}%</p>
+                <p>✅ <strong>Quiz KRA:</strong> ${quizKRA}%</p>
+                <p>✅ <strong>Productivity KRA:</strong> ${productivityKRA}%</p>
+                <p>🏆 <strong>Total KRA Score:</strong> ${totalKRA}%</p>
             `;
+            document.getElementById("result").classList.add("show");
         }
     </script>
 
