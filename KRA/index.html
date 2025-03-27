@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRA Score Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>KRA Score Calculator</h2>
+        
+        <label>Agent Name:</label>
+        <input type="text" id="agent_name" placeholder="Enter Agent Name">
+        
+        <label>Quality Score (%):</label>
+        <input type="number" id="quality_score" placeholder="Enter Quality Score">
+        
+        <label>Quiz Score (%):</label>
+        <input type="number" id="quiz_score" placeholder="Enter Quiz Score">
+        
+        <label>Productivity:</label>
+        <input type="number" id="productivity" placeholder="Enter Productivity">
+        
+        <button onclick="calculateKRA()">Calculate KRA</button>
+        
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculateKRA() {
+            let agentName = document.getElementById("agent_name").value.trim();
+            let qualityScore = parseFloat(document.getElementById("quality_score").value);
+            let quizScore = parseFloat(document.getElementById("quiz_score").value);
+            let productivity = parseFloat(document.getElementById("productivity").value);
+
+            if (isNaN(qualityScore) || isNaN(quizScore) || isNaN(productivity) || agentName === "") {
+                document.getElementById("result").innerHTML = "Please enter valid inputs!";
+                return;
+            }
+
+            // Quality KRA Calculation
+            let qualityKRA = 0;
+            if (qualityScore > 95) qualityKRA = 40;
+            else if (qualityScore >= 85 && qualityScore <= 95) qualityKRA = 30;
+            else if (qualityScore >= 75 && qualityScore < 85) qualityKRA = 20;
+            else if (qualityScore >= 65 && qualityScore < 75) qualityKRA = 10;
+
+            // Quiz KRA Calculation
+            let quizKRA = 0;
+            if (quizScore > 90) quizKRA = 20;
+            else if (quizScore >= 80 && quizScore <= 90) quizKRA = 15;
+            else if (quizScore >= 70 && quizScore < 80) quizKRA = 10;
+            else if (quizScore >= 60 && quizScore < 70) quizKRA = 5;
+
+            // Productivity KRA Calculation
+            let productivityKRA = 0;
+            if (productivity > 55) productivityKRA = 30;
+            else if (productivity >= 45.1 && productivity <= 55) productivityKRA = 20;
+            else if (productivity >= 35.1 && productivity < 45) productivityKRA = 10;
+
+            // Total KRA Score
+            let totalKRA = qualityKRA + quizKRA + productivityKRA;
+
+            // Display Result
+            document.getElementById("result").innerHTML = `
+                <p><strong>Agent Name:</strong> ${agentName}</p>
+                <p><strong>Quality KRA:</strong> ${qualityKRA}%</p>
+                <p><strong>Quiz KRA:</strong> ${quizKRA}%</p>
+                <p><strong>Productivity KRA:</strong> ${productivityKRA}%</p>
+                <p><strong>Total KRA Score:</strong> ${totalKRA}%</p>
+            `;
+        }
+    </script>
+
+</body>
+</html>
