@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Count Calculation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        input[type="number"] {
+            padding: 8px;
+            width: 100%;
+            margin: 15px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Today's Ticket Count</h2>
+    <label for="ticketCount">Enter the number of tickets:</label>
+    <input type="number" id="ticketCount" placeholder="Enter number of tickets" min="0">
+    <button onclick="calculateTicketCount()">Calculate</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    function calculateTicketCount() {
+        // Get the value of the input
+        var ticketCount = document.getElementById("ticketCount").value;
+
+        // Check if the input is valid
+        if (ticketCount === "" || ticketCount <= 0) {
+            document.getElementById("result").innerHTML = "Please enter a valid number of tickets.";
+            return;
+        }
+
+        // Calculate the result: ticketCount * 0.8
+        var total = ticketCount * 0;
+
+        // Display the result
+        document.getElementById("result").innerHTML = "Total Count (0.8 per ticket): " + total;
+    }
+</script>
+
+</body>
+</html>
