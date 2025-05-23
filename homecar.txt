@@ -1,0 +1,186 @@
+#define BLYNK_TEMPLATE_ID "TMPL3OiJ48zy-"
+#define BLYNK_TEMPLATE_NAME "HomeCar"
+#define BLYNK_AUTH_TOKEN "Wt-By9nYicywzzhctFIIYjKpZL3O0EN9"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+// Wi-Fi credentials
+const char* ssid = "Chirag_Bots";
+const char* password = "9967793985";
+
+// Motor pins
+#define ENA D0
+#define ENB D1
+#define IN1 D3
+#define IN2 D5
+#define IN3 D6
+#define IN4 D7
+
+// Buzzer and LED pins
+#define BUZZER_PIN D2
+#define LED_PIN D4 // Wi-Fi status LED
+
+BlynkTimer timer;
+bool isConnected = false;
+unsigned long lastBeepTime = 0;
+bool buzzerState = LOW;
+bool isCarMoving = false; // Track car movement status
+
+void setup() {
+  Serial.begin(115200);
+
+  // Setup motor pins
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+  // Setup buzzer and LED pins
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(BUZZER_PIN, LOW);
+  digitalWrite(LED_PIN, LOW);
+
+  // Start Wi-Fi and Blynk
+  connectWiFi();
+  Blynk.config(BLYNK_AUTH_TOKEN);
+  timer.setInterval(1000L, checkConnection); // Check connection every second
+}
+
+// Efficient Wi-Fi connection function
+void connectWiFi() {
+  Serial.print("Connecting to Wi-Fi...");
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+  int retries = 0;
+  while (WiFi.status() != WL_CONNECTED && retries < 20) {
+    delay(500);
+    Serial.print(".");
+    retries++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\nConnected to Wi-Fi");
+    digitalWrite(LED_PIN, HIGH);
+    isConnected = true;
+    startBuzzer(1000); // 5-second beep when connected
+  } else {
+    Serial.println("\nFailed to connect to Wi-Fi");
+    isConnected = false;
+  }
+}
+
+// Function to check connection and reconnect if needed
+void checkConnection() {
+  if (WiFi.status() != WL_CONNECTED) {
+    if (isConnected) {
+      isConnected = false;
+      digitalWrite(LED_PIN, LOW); // Turn off LED
+      stopCar();                  // Auto-stop car for safety
+      Serial.println("Wi-Fi disconnected. Attempting to reconnect...");
+    }
+    handleDisconnectedBeep();
+    connectWiFi(); // Attempt to reconnect
+  } else if (!isConnected) {
+    isConnected = true;
+    digitalWrite(LED_PIN, HIGH);  // LED ON when connected
+    startBuzzer(100);            // 5-second beep when reconnected
+    Serial.println("Reconnected to Wi-Fi");
+  }
+}
+
+// Function to control the buzzer without delay
+void startBuzzer(unsigned long duration) {
+  digitalWrite(BUZZER_PIN, HIGH);
+  lastBeepTime = millis() + duration;
+}
+
+// Handle buzzer beeping when disconnected
+void handleDisconnectedBeep() {
+  if (millis() - lastBeepTime >= 2000) {
+    buzzerState = !buzzerState;
+    digitalWrite(BUZZER_PIN, buzzerState);
+    lastBeepTime = millis();
+  }
+  if (isConnected) {
+    digitalWrite(BUZZER_PIN, LOW); // Turn off buzzer when connected
+  }
+}
+
+// Function to control car movement
+void controlCar(bool forward, bool backward, bool left, bool right) {
+  if (forward) {
+    digitalWrite(ENA, HIGH);
+    digitalWrite(ENB, HIGH);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+    Serial.println("Moving Forward");
+  } else if (backward) {
+    digitalWrite(ENA, HIGH);
+    digitalWrite(ENB, HIGH);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+    Serial.println("Moving Backward");
+  } else if (left) {
+    digitalWrite(ENA, HIGH);
+    digitalWrite(ENB, HIGH);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+    Serial.println("Turning Left");
+  } else if (right) {
+    digitalWrite(ENA, HIGH);
+    digitalWrite(ENB, HIGH);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+    Serial.println("Turning Right");
+  } else {
+    stopCar();
+  }
+  isCarMoving = forward || backward || left || right;
+}
+
+// Function to stop the car
+void stopCar() {
+  digitalWrite(ENA, LOW);
+  digitalWrite(ENB, LOW);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+  isCarMoving = false;
+  Serial.println("Car Stopped");
+}
+
+// Blynk commands for car control
+BLYNK_WRITE(V0) { controlCar(param.asInt(), 0, 0, 0); } // Forward
+BLYNK_WRITE(V1) { controlCar(0, param.asInt(), 0, 0); } // Backward
+BLYNK_WRITE(V2) { controlCar(0, 0, param.asInt(), 0); } // Left
+BLYNK_WRITE(V3) { controlCar(0, 0, 0, param.asInt()); } // Right
+
+void loop() {
+  Blynk.run();
+  timer.run();
+  
+  // Manage the buzzer based on connection
+  if (isConnected && millis() >= lastBeepTime) {
+    digitalWrite(BUZZER_PIN, LOW); // Stop buzzer after 5 seconds when connected
+  }
+
+  // Safety: Auto-stop car if Wi-Fi disconnects
+  if (!isConnected && isCarMoving) {
+    stopCar();
+    Serial.println("Auto-stopped: Wi-Fi disconnected.");
+  }
+}
