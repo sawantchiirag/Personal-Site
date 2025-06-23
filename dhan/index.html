@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat Team Break Slots</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #e1f5fe);
+      padding: 40px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #0077b6;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 15px;
+      display: block;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #0077b6;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #005f87;
+    }
+
+    .slot-list {
+      margin-top: 40px;
+    }
+
+    .slot-entry {
+      background: #f1faff;
+      margin: 10px 0;
+      padding: 15px;
+      border-left: 5px solid #00b4d8;
+      border-radius: 5px;
+    }
+
+    .slot-entry strong {
+      color: #0077b6;
+    }
+
+    .full-slot {
+      color: red;
+      font-weight: bold;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .admin-section {
+      margin-top: 40px;
+      background-color: #fefefe;
+      border-top: 1px dashed #ccc;
+      padding-top: 20px;
+    }
+
+    .admin-section h3 {
+      margin-bottom: 10px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chat Team Break Slots</h1>
+
+    <label for="agentName">Select Your Name:</label>
+    <select id="agentName" required>
+      <option value="">-- Select Name --</option>
+      <option>Akash Gupta</option>
+      <option>Akshay Kotkar</option>
+      <option>Aparna Marick</option>
+      <option>Atul Tiwari</option>
+      <option>Bhavisha Mistry</option>
+      <option>Chirag Sawant</option>
+      <option>Hiten Haresh Narsana</option>
+      <option>Iqbal Shaikh</option>
+      <option>jash.​damania</option>
+      <option>Madhura Lingayat</option>
+      <option>Madiya Khatri</option>
+      <option>Mrunmayi Vaity</option>
+      <option>Mubin Shaikh</option>
+      <option>Om Gaikwad</option>
+      <option>Pranay Rakshe</option>
+      <option>Pranit Jadhav</option>
+      <option>Rahul Yadav</option>
+      <option>Raj Raval</option>
+      <option>Rekha Chawan</option>
+      <option>Sachin Kanojia</option>
+      <option>Saurav Poojari</option>
+      <option>Shubham Singh</option>
+      <option>Siddesh Shetty</option>
+      <option>Tejal Jadhav</option>
+      <option>Vaibhav Lad</option>
+      <option>Vedant Padhiar</option>
+    </select>
+
+    <label for="breakType">Break Type:</label>
+    <select id="breakType">
+      <option value="Morning">Morning Break (10:00 AM - 12:00 PM)</option>
+      <option value="Lunch">Lunch Break (1:00 PM - 4:30 PM)</option>
+    </select>
+
+    <label for="slotTime">Select Time Slot:</label>
+    <select id="slotTime"></select>
+
+    <div id="slotStatus" class="full-slot"></div>
+
+    <button onclick="bookSlot()">Book Slot</button>
+
+    <div class="slot-list">
+      <h2>Today's Break Slots</h2>
+      <div id="bookingList"></div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Admin Controls</h3>
+      <label for="adminPass">Enter Password to Clear Today’s Break Slots:</label>
+      <input type="password" id="adminPass" placeholder="Enter admin password">
+      <button onclick="clearTodayBookings()">Clear Today's Break Slots</button>
+    </div>
+  </div>
+
+  <script>
+    const slotTime = document.getElementById('slotTime');
+    const breakType = document.getElementById('breakType');
+    const statusDiv = document.getElementById('slotStatus');
+
+    function formatTime(date) {
+      let h = date.getHours();
+      let m = date.getMinutes().toString().padStart(2, '0');
+      let suffix = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return `${h}:${m} ${suffix}`;
+    }
+
+    function generateSlots(type) {
+      slotTime.innerHTML = '';
+      let start = type === 'Morning' ? 10 : 13;
+      let end = type === 'Morning' ? 12 : 16.5;
+
+      for (let time = start; time < end; time += 0.25) {
+        let hour = Math.floor(time);
+        let minute = (time % 1) * 60;
+        let from = new Date(0, 0, 0, hour, minute);
+        let to = new Date(0, 0, 0, hour, minute + 15);
+        let label = `${formatTime(from)} - ${formatTime(to)}`;
+        slotTime.innerHTML += `<option value="${label}">${label}</option>`;
+      }
+      updateSlotStatus();
+    }
+
+    breakType.addEventListener('change', () => generateSlots(breakType.value));
+    slotTime.addEventListener('change', updateSlotStatus);
+
+    function updateSlotStatus() {
+      const type = breakType.value;
+      const time = slotTime.value;
+      const today = new Date().toLocaleDateString();
+      const bookings = JSON.parse(localStorage.getItem('breakBookings') || '[]');
+      const slotCount = bookings.filter(entry => entry.time === time && entry.type === type && entry.date === today).length;
+      statusDiv.textContent = slotCount >= 3 ? '⛔ This slot is full. Please choose another one.' : '';
+    }
+
+    function bookSlot() {
+      const name = document.getElementById('agentName').value;
+      const type = breakType.value;
+      const time = slotTime.value;
+      const today = new Date().toLocaleDateString();
+
+      if (!name) return alert("Please select your name.");
+
+      const record = { name, type, time, date: today };
+      let data = JSON.parse(localStorage.getItem('breakBookings') || '[]');
+
+      if (data.some(e => e.name === name && e.type === type && e.date === today)) {
+        alert("❗ You already booked a slot for this break today.");
+        return;
+      }
+
+      const slotCount = data.filter(entry => entry.time === time && entry.type === type && entry.date === today).length;
+      if (slotCount >= 3) {
+        alert("🚫 Slot is already full. Please choose a different time.");
+        return;
+      }
+
+      data.push(record);
+      localStorage.setItem('breakBookings', JSON.stringify(data));
+      loadBookings();
+      updateSlotStatus();
+      alert("✅ Slot booked successfully!");
+    }
+
+    function loadBookings() {
+      const today = new Date().toLocaleDateString();
+      let data = JSON.parse(localStorage.getItem('breakBookings') || '[]');
+      let todayBookings = data.filter(entry => entry.date === today);
+      const list = document.getElementById('bookingList');
+      list.innerHTML = '';
+
+      if (todayBookings.length === 0) {
+        list.innerHTML = '<p>No break slots booked for today.</p>';
+        return;
+      }
+
+      todayBookings.forEach(entry => {
+        list.innerHTML += `
+          <div class="slot-entry">
+            <strong>@${entry.name}</strong><br>
+            🕒 ${entry.time} — ${entry.type} Break
+          </div>
+        `;
+      });
+    }
+
+    function clearTodayBookings() {
+      const password = document.getElementById('adminPass').value;
+      const today = new Date().toLocaleDateString();
+
+      if (password !== 'dhan@123') {
+        alert("🚫 Incorrect password.");
+        return;
+      }
+
+      let data = JSON.parse(localStorage.getItem('breakBookings') || '[]');
+      let filtered = data.filter(entry => entry.date !== today);
+      localStorage.setItem('breakBookings', JSON.stringify(filtered));
+      alert("🧹 Today's break slots cleared!");
+      loadBookings();
+      updateSlotStatus();
+    }
+
+    // Init
+    generateSlots('Morning');
+    loadBookings();
+  </script>
+</body>
+</html>
